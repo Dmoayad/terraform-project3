@@ -36,3 +36,18 @@ stages:
         backendAzureRmResourceGroupName: $(backend_resource_group_name) 
         backendAzureRmContainerName: '$(backend_container_name)'
         backendAzureRmKey: '$(backend_key)'
+    
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Plan'
+      inputs:
+        provider: 'azurerm' # Or your chosen provider
+        command: 'plan'
+        commandOptions: '-out tfplan'
+        workingDirectory: '$(workingDir)' # Path to your tf files
+        backendType: 'azurerm'
+        backendServiceArm: '$(azure_connection)' 
+        backendAzureRmStorageAccountName: '$(backend_storage_account_name)' 
+        backendAzureRmResourceGroupName: $(backend_resource_group_name) 
+        backendAzureRmContainerName: '$(backend_container_name)'
+        backendAzureRmKey: '$(backend_key)'
+      
