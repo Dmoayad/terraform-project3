@@ -33,9 +33,9 @@ stages:
         backendType: 'azurerm'
         backendConfiguration: |
           resource_group_name: $(backend_resource_group_name)
-          storage_account_name: '$(backend_storage_account_name)'
           container_name: '$(backend_container_name)'
           key: '$(backend_key)'
         backendServiceArm: '$(azure_connection)' 
+        backendAzureRmStorageAccountName: '$(backend_storage_account_name)' 
         # environmentServiceNameAzureRM: '$(azure_connection)' # Name of your service connection
 
