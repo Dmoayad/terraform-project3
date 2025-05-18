@@ -36,5 +36,6 @@ stages:
           storage_account_name: '$(backend_storage_account_name)'
           container_name: '$(backend_container_name)'
           key: '$(backend_key)'
-        environmentServiceNameAzureRM: '$(azure_connection)' # Name of your service connection
+        backendServiceArm: '$(azure_connection)' 
+        # environmentServiceNameAzureRM: '$(azure_connection)' # Name of your service connection
 
