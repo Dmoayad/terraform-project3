@@ -6,36 +6,35 @@ pool:
 
 variables:
   azure_connection: 'azurerm-connection'
+  workingDir: '$(System.DefaultWorkingDirectory)/terraform/dev'
+  backend_resource_group_name: "devops2-group5-storage-rg"
+  backend_storage_account_name: "devops2group5tfstate"
+  backend_container_name: "devops2-group5-tfstate-container"
+  backend_rg_location: "japanwest"
+  backend_key: "terraform.tfstate"
 
 stages:
-- stage: Plan
+- stage: Terraform_init_plan
   displayName: 'Terraform init & Plan'
   jobs:
   - job: TerraformPlan
-    displayName: 'Terraform Plan'
+    displayName: 'Terraform init & Plan'
     steps:
-    - task: AzureCLI@2
-      displayName: 'Login to Azure using Service Connection'
-      inputs:
-        azureSubscription: '$(azure_connection)' # Authenticates and sets env vars
-        scriptType: 'bash'
-        scriptLocation: 'inlineScript'
-        inlineScript: |
-          echo "Azure login successful via service connection."
-          az account show
-          # THIS TASK sets ARM_* environment variables for THIS JOB
-
     - task: TerraformInstaller@0
       inputs:
         terraformVersion: 'latest'
-      # This task installs Terraform, doesn't necessarily need ARM auth here
+    
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Init'
+      inputs:
+        provider: 'azurerm' # Or your chosen provider
+        command: 'init'
+        workingDirectory: '$(workingDir)' # Path to your tf files
+        backendType: 'azurerm'
+        backendConfiguration: |
+          resource_group_name: $(backend_resource_group_name)
+          storage_account_name: '$(backend_storage_account_name)'
+          container_name: '$(backend_container_name)'
+          key: '$(backend_key)'
+        environmentServiceNameAzureRM: '$(azure_conneciton)' # Name of your service connection
 
-    - script: |
-        terraform --version
-        cd terraform/dev
-        # THIS SCRIPT RUNS TERRAFORM COMMANDS
-        # It relies on the ARM_* environment variables set by the AzureCLI@2 task in the same job
-
-        terraform init -backend-config="storage_account_name=$(storageAccountName)" -backend-config="container_name=$(containerName)" -backend-config="key=$(key)" -backend-config="access_key=$(accessKey)"
-        terraform plan -out=tfplan
-      displayName: 'Terraform Init and Plan'
