@@ -50,4 +50,5 @@ stages:
         backendAzureRmResourceGroupName: $(backend_resource_group_name) 
         backendAzureRmContainerName: '$(backend_container_name)'
         backendAzureRmKey: '$(backend_key)'
+        environmentServiceNameAzureRM: '$(azure_connection)' 
       
