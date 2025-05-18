@@ -31,11 +31,8 @@ stages:
         command: 'init'
         workingDirectory: '$(workingDir)' # Path to your tf files
         backendType: 'azurerm'
-        backendConfiguration: |
-          resource_group_name: $(backend_resource_group_name)
-          container_name: '$(backend_container_name)'
-          key: '$(backend_key)'
         backendServiceArm: '$(azure_connection)' 
         backendAzureRmStorageAccountName: '$(backend_storage_account_name)' 
-        # environmentServiceNameAzureRM: '$(azure_connection)' # Name of your service connection
-
+        backendAzureRmResourceGroupName: $(backend_resource_group_name) 
+        backendAzureRmContainerName: '$(backend_container_name)'
+        backendAzureRmKey: '$(backend_key)'
