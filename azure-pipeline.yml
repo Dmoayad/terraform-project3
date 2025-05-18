@@ -4,6 +4,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+  azure_connection: 'azurerm-connection'
+
 stages:
 - stage: Plan
   displayName: 'Terraform init & Plan'
@@ -13,6 +16,7 @@ stages:
     steps:
     - task: TerraformInstaller@0
       inputs:
+        azureResourceManagerConnection: $(azure_connection)
         terraformVersion: 'latest'
 
     - script: |
