@@ -8,6 +8,21 @@ variables:
   azure_connection: 'azurerm-connection'
 
 stages:
+- stage: Azure Auth
+  displayName: 'Auth Test'
+  jobs:
+  - job: AzureCLI
+    displayName: 'Auth Test2'
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Login to Azure using Service Connection'
+      inputs:
+        azureSubscription: '$(azure_connection)' # Authenticates and sets env vars
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          echo "Azure login successful via service connection."
+          az account show 
 - stage: Plan
   displayName: 'Terraform init & Plan'
   jobs:
