@@ -64,8 +64,34 @@ stages:
             --encryption-services blob \
             --kind StorageV2 \
             --access-tier Hot
-          echo "Waiting for storage account to provision..."
-          sleep 30 # Add a 30-second delay
+
+            echo "Polling for storage account provisioning state..."
+          provisioning_state=""
+          # Poll for up to 5 minutes (60 iterations of 5 seconds)
+          timeout_seconds=300
+          interval_seconds=5
+          elapsed_seconds=0
+
+          while [[ "$provisioning_state" != "Succeeded" && "$elapsed_seconds" -lt "$timeout_seconds" ]]; do
+            provisioning_state=$(az storage account show \
+              --name $(backend_storage_account_name) \
+              --resource-group $(backend_resource_group_name) \
+              --query provisioningState -o tsv 2>/dev/null) # Redirect stderr to /dev/null to suppress errors during initial provisioning
+
+            if [[ "$provisioning_state" != "Succeeded" ]]; then
+              echo "Current state: $provisioning_state. Waiting ${interval_seconds} seconds..."
+              sleep ${interval_seconds}
+              elapsed_seconds=$((elapsed_seconds + interval_seconds))
+            fi
+          done
+
+          if [[ "$provisioning_state" == "Succeeded" ]]; then
+            echo "Storage account $(backend_storage_account_name) provisioned successfully."
+          else
+            echo "Error: Storage account $(backend_storage_account_name) did not reach 'Succeeded' state within the timeout."
+            exit 1 # Exit the script with an error code
+          fi
+
 
     - task: AzureCLI@2
       displayName: 'Create Storage Container'
@@ -115,7 +141,7 @@ stages:
       inputs:
         provider: 'azurerm' # Or your chosen provider
         command: 'plan'
-        commandOptions: '-out tfplan'
+        commandOptions: '-out tfplan -lock=false'
         workingDirectory: '$(workingDir)' # Path to your tf files
         backendType: 'azurerm'
         backendServiceArm: '$(azure_connection)' 
