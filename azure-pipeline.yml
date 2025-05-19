@@ -12,6 +12,7 @@ variables:
   backend_container_name: "devops2-group5-tfstate-container"
   backend_rg_location: "japanwest"
   backend_key: "terraform.tfstate"
+  artifact_name: "plan"
 
 stages:
 - stage: Create_Terraform_Backend
@@ -131,9 +132,9 @@ stages:
       displayName: 'Making artifact available to apply stage'
       inputs:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'tfplan'
+        ArtifactName: '$(artifact_name)'
         publishLocation: 'Container'
-        
+
 - stage: Terraform_apply
   displayName: 'Terraform Apply'
   dependsOn: Terraform_init_plan # Ensure this stage runs after init and plan
