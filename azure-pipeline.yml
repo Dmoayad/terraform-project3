@@ -14,6 +14,68 @@ variables:
   backend_key: "terraform.tfstate"
 
 stages:
+- stage: Create_Terraform_Backend
+  displayName: 'Create Terraform Backend Storage'
+  jobs:
+  - job: CreateStorage
+    displayName: 'Create Azure Storage for Terraform State'
+    steps:
+    - task: AzureCLI@2
+      displayName: 'Create Resource Group'
+      inputs:
+        azureSubscription: '$(azure_connection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az group create \
+            --name $(backend_resource_group_name) \
+            --location $(backend_rg_location) \
+            --tags "managedBy=azure-pipeline"
+
+    - task: AzureCLI@2
+      displayName: 'Check if Storage Account Exists'
+      name: checkStorageAccount
+      inputs:
+        azureSubscription: '$(azure_connection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          if az storage account check-name --name $(backend_storage_account_name) --query "nameAvailable" -o tsv | grep "false"
+          then
+            echo "##vso[task.setvariable variable=storageAccountExists;isOutput=true]true"
+          else
+            echo "##vso[task.setvariable variable=storageAccountExists;isOutput=true]false"
+          fi
+
+    - task: AzureCLI@2
+      displayName: 'Create Storage Account'
+      condition: eq(variables['checkStorageAccount.storageAccountExists'], 'false') # Only run if storage account does not exist
+      inputs:
+        azureSubscription: '$(azure_connection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az storage account create \
+            --name $(backend_storage_account_name) \
+            --resource-group $(backend_resource_group_name) \
+            --location $(backend_rg_location) \
+            --sku Standard_LRS \
+            --encryption-services blob \
+            --kind StorageV2 \
+            --access-tier Hot
+
+    - task: AzureCLI@2
+      displayName: 'Create Storage Container'
+      inputs:
+        azureSubscription: '$(azure_connection)'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az storage container create \
+            --name $(backend_container_name) \
+            --account-name $(backend_storage_account_name) \
+            --resource-group $(backend_resource_group_name)
+
 - stage: Terraform_init_plan
   displayName: 'Terraform init & Plan'
   jobs:
