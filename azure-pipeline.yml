@@ -78,7 +78,7 @@ stages:
             --resource-group $(backend_resource_group_name)
 
 - stage: terraform_plan
-  displayname: 'Terraform Plan'
+  displayName: 'Terraform Plan'
   jobs:
   - job: TerraformPlan
     displayName: 'Terraform init & Plan'
