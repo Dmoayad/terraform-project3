@@ -36,7 +36,15 @@ stages:
         backendAzureRmResourceGroupName: $(backend_resource_group_name) 
         backendAzureRmContainerName: '$(backend_container_name)'
         backendAzureRmKey: '$(backend_key)'
-    
+
+    - task: TerraformTaskV4@4
+      displayName: 'Validate Terraform'
+      inputs:
+        provider: 'azurerm'
+        command: 'validate'
+        environmentServiceNameAzureRM: '$(azure_connection)' 
+
+
     - task: TerraformTaskV4@4
       displayName: 'Terraform Plan'
       inputs:
@@ -51,4 +59,15 @@ stages:
         backendAzureRmContainerName: '$(backend_container_name)'
         backendAzureRmKey: '$(backend_key)'
         environmentServiceNameAzureRM: '$(azure_connection)' 
-      
+    - task: CopyFiles@2
+      displayName: 'Moving Terraform Code to artifact staging'
+      inputs:
+        Contents: 'terraform/**'
+        TargetFolder: '$(build.ArtifactStagingDirectory)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Making artifact available to apply stage'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'tfplan'
+        publishLocation: 'Container'
