@@ -64,6 +64,8 @@ stages:
             --encryption-services blob \
             --kind StorageV2 \
             --access-tier Hot
+          echo "Waiting for storage account to provision..."
+          sleep 30 # Add a 30-second delay
 
     - task: AzureCLI@2
       displayName: 'Create Storage Container'
