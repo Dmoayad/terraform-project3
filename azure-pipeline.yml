@@ -77,8 +77,8 @@ stages:
             --account-name $(backend_storage_account_name) \
             --resource-group $(backend_resource_group_name)
 
-- stage: Terraform_init_plan
-  displayName: 'Terraform init & Plan'
+- stage: terraform_plan
+  displayname: 'Terraform Plan'
   jobs:
   - job: TerraformPlan
     displayName: 'Terraform init & Plan'
@@ -137,7 +137,7 @@ stages:
 
 - stage: Terraform_apply
   displayName: 'Terraform Apply'
-  dependsOn: Terraform_init_plan # Ensure this stage runs after init and plan
+  dependsOn: terraform_plan # Ensure this stage runs after init and plan
   jobs:
   - job: TerraformApply
     displayName: 'Apply Terraform Plan'
