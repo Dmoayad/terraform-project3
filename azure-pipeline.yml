@@ -133,3 +133,53 @@ stages:
         PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'tfplan'
         publishLocation: 'Container'
+        
+- stage: Terraform_apply
+  displayName: 'Terraform Apply'
+  dependsOn: Terraform_init_plan # Ensure this stage runs after init and plan
+  jobs:
+  - job: TerraformApply
+    displayName: 'Apply Terraform Plan'
+    steps:
+    - task: DownloadBuildArtifacts@1
+      displayName: 'Download Terraform Artifact'
+      inputs:
+        buildType: 'current'
+        # The default artifact name is 'drop'. Make sure this matches
+        # the ArtifactName in your PublishBuildArtifacts@1 task if not using the variable.
+        # If you are using the variable, this will automatically match.
+        artifactName: '$(artifact_name)'
+        downloadType: 'single'
+        downloadPath: '$(System.DefaultWorkingDirectory)'
+
+    - task: TerraformInstaller@0
+      inputs:
+        terraformVersion: 'latest'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Init (for apply)'
+      inputs:
+        provider: 'azurerm' # Or your chosen provider
+        command: 'init'
+        workingDirectory: '$(workingDir)' # Path to your tf files
+        backendType: 'azurerm'
+        backendServiceArm: '$(azure_connection)'
+        backendAzureRmStorageAccountName: '$(backend_storage_account_name)'
+        backendAzureRmResourceGroupName: $(backend_resource_group_name)
+        backendAzureRmContainerName: '$(backend_container_name)'
+        backendAzureRmKey: '$(backend_key)'
+
+    - task: TerraformTaskV4@4
+      displayName: 'Terraform Apply'
+      inputs:
+        provider: 'azurerm' # Or your chosen provider
+        command: 'apply'
+        commandOptions: '$(System.DefaultWorkingDirectory)/$(artifact_name)/terraform/dev/tfplan' # Provide the path to the downloaded plan file
+        workingDirectory: '$(workingDir)' # Path to your tf files
+        backendType: 'azurerm'
+        backendServiceArm: '$(azure_connection)'
+        backendAzureRmStorageAccountName: '$(backend_storage_account_name)'
+        backendAzureRmResourceGroupName: $(backend_resource_group_name)
+        backendAzureRmContainerName: '$(backend_container_name)'
+        backendAzureRmKey: '$(backend_key)'
+        environmentServiceNameAzureRM: '$(azure_connection)'
