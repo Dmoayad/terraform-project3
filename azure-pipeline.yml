@@ -152,7 +152,7 @@ stages:
       inputs:
         provider: 'azurerm' # Or your chosen provider
         command: 'plan'
-        commandOptions: '-out tfplan -lock=false'
+        commandOptions: '-out tfplan'
         workingDirectory: '$(workingDir)' # Path to your tf files
         backendType: 'azurerm'
         backendServiceArm: '$(azure_connection)' 
