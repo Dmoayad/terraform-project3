@@ -228,7 +228,7 @@ stages:
         backendAzureRmContainerName: '$(backend_container_name)'
         backendAzureRmKey: '$(backend_key)'
         environmentServiceNameAzureRM: '$(azure_connection)'
-
+      retryCount: 3
 
 # -----------------------------------------
 # Stage 4: Helm Setup Tools
