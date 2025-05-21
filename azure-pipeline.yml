@@ -12,7 +12,7 @@ variables:
   backend_resource_group_name: "devops2-group5-storage-rg"
   backend_storage_account_name: "devops2group5tfstate"
   backend_container_name: "devops2-group5-tfstate-container"
-  backend_rg_location: "japanwest"
+  backend_rg_location: "eastus"
   backend_key: "terraform.tfstate"
   artifact_name: "plan"
 

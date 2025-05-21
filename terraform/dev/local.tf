@@ -2,7 +2,7 @@ locals {
 
 
   prefix                 = "devops2-group5"
-  location               = "Japan West"
+  location               = "East US"
   default_node_pool_name = "g5"
 
   vnet_address_space      = ["10.7.0.0/16"]
