@@ -268,7 +268,7 @@ stages:
           helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace \
           --values K8s/monitoring-values.yml
 
-          kubectl apply -f K8s/prometheus-lb.yml -f K8s/grafana.yml 
+          kubectl apply -f K8s/prometheus-lb.yml -f K8s/grafana-lb.yml 
           # note the one I need for note
           # helm install prometheus prometheus-community/prometheus --namespace monitoring
           # kubectl expose service prometheus-server --namespace monitoring --type=LoadBalancer --target-port=9090 --name=prometheus-server-ext\
