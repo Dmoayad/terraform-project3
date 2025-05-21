@@ -245,7 +245,6 @@ stages:
       vmImage: ubuntu-latest
     steps:
     - checkout: self
-
     - task: AzureCLI@2
       displayName: 'Install Ingress + Prometheus + Grafana'
       inputs:
