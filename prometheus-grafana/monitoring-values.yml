@@ -1,0 +1,19 @@
+# Configuration for Prometheus
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: standard # Or the name of your preferred StorageClass
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi # Adjust this size based on your needs
+
+# Configuration for Grafana
+grafana:
+  persistence:
+    enabled: true
+    storageClassName: standard # Or the name of your preferred StorageClass
+    accessModes: ["ReadWriteOnce"]
+    size: 10Gi # Adjust this size based on your needs

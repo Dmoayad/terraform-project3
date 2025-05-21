@@ -264,4 +264,5 @@ stages:
           echo "Install Prometheus + Grafana"
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
           helm repo update
-          helm upgrade --install monitoring prometheus-community/kube-prometheus-stack
+          helm upgrade --install monitoring prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace \
+          --values prometheus-grafana/monitoring-values.yaml
